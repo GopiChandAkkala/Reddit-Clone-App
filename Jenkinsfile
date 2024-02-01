@@ -16,6 +16,16 @@ pipeline{
                 cleanWs()
             }
         }
+        stage("Git Checkout") {            
+            steps {
+                script {
+                    gitCheckout(
+                        branch: "main",
+                        url: "https://github.com/GopiChandAkkala/Reddit-Clone-App.git"
+                    )
+                }
+            }
+        }
         
         /* stage("Sonarqube Analysis "){
             steps{
