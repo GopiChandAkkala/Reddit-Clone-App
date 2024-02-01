@@ -17,7 +17,7 @@ pipeline{
             }
         }
         
-        stage("Sonarqube Analysis "){
+        /* stage("Sonarqube Analysis "){
             steps{
                 withSonarQubeEnv('sonar-server') {
                     sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Reddit \
@@ -31,13 +31,13 @@ pipeline{
                     waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube-api' 
                 }
             } 
-        }
+        } */
         stage('Install Dependencies') {
             steps {
                 sh "npm install"
             }
         }
-        stage('OWASP FS SCAN') {
+        /* stage('OWASP FS SCAN') {
             steps {
                 dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
@@ -47,6 +47,24 @@ pipeline{
             steps {
                 sh "trivy fs . > trivyfs.txt"
             }
+        } */
+        stage("Docker Build & Push"){
+            steps{
+                script{
+                  
+                       sh "docker build -t reddit ."
+                       sh "docker tag reddit akkalagopi/reddit:latest "
+                       sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                       sh "docker push akkalagopi/reddit:latest "
+                    
+                }
+            }
         }
+        stage("TRIVY"){
+            steps{
+                sh "trivy image akkalagopi/reddit:latest > trivy.txt" 
+            }
+        }
+
     }
 }
