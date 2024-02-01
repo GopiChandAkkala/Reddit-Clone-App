@@ -16,14 +16,9 @@ pipeline{
                 cleanWs()
             }
         }
-        stage("Git Checkout") {            
-            steps {
-                script {
-                    gitCheckout(
-                        branch: "main",
-                        url: "https://github.com/GopiChandAkkala/Reddit-Clone-App.git"
-                    )
-                }
+        stage('Checkout from Git'){
+            steps{
+                git branch: 'main', url: 'https://github.com/GopiChandAkkala/Reddit-Clone-App.git'
             }
         }
         
